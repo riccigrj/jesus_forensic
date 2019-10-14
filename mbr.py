@@ -14,6 +14,23 @@ class MBR(Enum):
 	START_SIGNATUREF = 510
 	END_SIGNATUREF = 512
 
+class Type(Enum):
+	FAT12 = 1
+	FAT16CHS = 6
+	FAT32CHS = 11
+
+	@classmethod
+	def listType(self):
+		listT = []
+		listT.append(m.value for m in Type)
+		return listT
+
+	@classmethod
+	def get_type(self,code):
+		for m in listType():
+			if code == i:
+				return i
+
 class Part_MBR(Enum):
 	START_STATUS = 0 
 	END_STATUS = 1
@@ -25,5 +42,5 @@ class Part_MBR(Enum):
 	END_CHS_LAST_SECTOR = 8
 	START_LBA_FIRST_SECTOR = 8
 	END_LBA_FIRST_SECTOR = 12
-	START_QTD_SECTOR = 12
-	END_QTD_SECTOR = 15
+	START_QTT_SECTOR = 12
+	END_QTT_SECTOR = 16
