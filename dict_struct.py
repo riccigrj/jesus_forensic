@@ -1,6 +1,8 @@
-from enum import Enum
+#!/usr/bin/python3
 
-class MBR(Enum):
+from enum import IntEnum,Enum
+
+class MBR(IntEnum):
 	START_PROTECT = 444
 	END_PROTECT = 446
 	START_PART1 = 446
@@ -14,7 +16,7 @@ class MBR(Enum):
 	START_SIGNATUREF = 510
 	END_SIGNATUREF = 512
 
-class Type(Enum):
+class TYPE(Enum):
 	FAT12 = (1, "FAT12")
 	FAT16CHS = (6, "FAT16CHS")
 	FAT32CHS = (11, "FAT32CHS")
@@ -26,11 +28,11 @@ class Type(Enum):
 	@classmethod
 	def get_type(self,code):
 		listT = self.listType()
-		for t in listT:
-			if code == t[0]:
-				return t
+		for typePart in listT:
+			if code == typePart:
+				return typePart
 
-class Part_MBR(Enum):
+class PART_MBR(IntEnum):
 	START_STATUS = 0 
 	END_STATUS = 1
 	START_CHS_FIST_SECTOR = 1
@@ -44,7 +46,7 @@ class Part_MBR(Enum):
 	START_QTT_SECTOR = 12
 	END_QTT_SECTOR = 16
 
-class FAT(Enum):
+class FAT_RESERVED(IntEnum):
 	START_BOOT = 0
 	END_BOOT = 3
 	START_DESC_FAB = 3
