@@ -34,11 +34,27 @@ class ImageDissect(object):
 
 		return listPartPri
 
-	def fat(self,first_sector, last_sector):
-		fatSector = self.get_sector(first_sector, last_sector)
-		fat = {}
-		fat["DESC_FAB"] = fatSector[FAT_RESERVED.START_DESC_FAB:FAT_RESERVED.END_DESC_FAB].decode("utf-8")
-		fat["DESC_MEDIA"] = struct.unpack('<b',fatSector[FAT_RESERVED.STAR_DESC_MEDIA:FAT_RESERVED.END_DESC_MEDIA])
-		return fat
+	def fat_boot(self,first_sector, last_sector):
+		fatBootSector = self.get_sector(first_sector, last_sector)
+		fatBoot = {}
+		fatBoot["DESC_FAB"] = fatBootSector[FAT_RESERVED.START_DESC_FAB:FAT_RESERVED.END_DESC_FAB].decode("utf-8")
+		fatBoot["DESC_MEDIA"] = fatBootSector[FAT_RESERVED.START_VOLUME_LABEL:FAT_RESERVED.END_VOLUME_LABEL].decode("ascii")
+		fatBoot["BYTES_SECTOR"] = struct.unpack('<h', fatBootSector[FAT_RESERVED.START_BYTES_SECTOR:FAT_RESERVED.END_BYTES_SECTOR])[0]
+		fatBoot["QTT_SECTORS_ALOC_TABLE"] = struct.unpack('<h', fatBootSector[FAT_RESERVED.START_QTT_SECTOR_ALOC_TABLE:FAT_RESERVED.END_QTT_SECTOR_ALOC_TABLE])[0]
+		fatBoot["QTT_ALOC_TABLE"] = struct.unpack('<b', fatBootSector[FAT_RESERVED.START_QTT_ALOC_TABLE:FAT_RESERVED.END_QTT_ALOC_TABLE])[0]
+		fatBoot["RESERVED_SECTORS"] = struct.unpack('<h',fatBootSector[FAT_RESERVED.STAR_RESERVED_SECTORS:FAT_RESERVED.END_RESERVED_SECTORS])[0]
+		return fatBoot
+	
+	def fat_aloc_table(self, first_sector,last_sector):
+		fatAlocTableSector = self.get_sector(first_sector,last_sector)
+		fatAlocTable = {}
+		files = []
+		for i in range(0,int(((last_sector)*512)/32)):
+			fatAlocTableFile = {}
+			fatAlocTableFile["FILE_NAME"] = fatAlocTableSector[FAT_ALOC_TABLE.START_FILE_NAME+(i*32):FAT_ALOC_TABLE.END_FILE_NAME+(i*32)]
+			fatAlocTableFile["EXT_FILE"] = fatAlocTableSector[FAT_ALOC_TABLE.START_EXT_FILE+(i*32):FAT_ALOC_TABLE.END_EXT_FILE+(i*32)]
+			if (fatAlocTableFile["FILE_NAME"] != b'\x00\x00\x00\x00\x00\x00\x00\x00' and fatAlocTableFile["FILE_NAME"] != b''):
+				files.append(fatAlocTableFile)
 
-		
+		fatAlocTable["FILES"] = files
+		return fatAlocTable

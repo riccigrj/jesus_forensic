@@ -10,7 +10,9 @@ if __name__ == "__main__":
 	dissector = ImageDissect(fileimage)
 	listPartPri = dissector.mbr(0,1)
 	for partPri in listPartPri:
-		fat = dissector.fat(partPri["first_sector"],partPri["last_sector"])
-		#print(fat)
-	print(output_mbr(listPartPri))
+		fatBoot = dissector.fat_boot(partPri["first_sector"],partPri["first_sector"]+1)
+		alocTableFirstSector = (fatBoot["RESERVED_SECTORS"]+(fatBoot["QTT_SECTORS_ALOC_TABLE"]*2))
+		alocTabaleLastSector = alocTableFirstSector+512
+		fatAlocTable = dissector.fat_aloc_table(alocTableFirstSector,alocTabaleLastSector)
+		print(fatBoot, fatAlocTable)
 
