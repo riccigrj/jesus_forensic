@@ -31,7 +31,6 @@ class ImageDissect(object):
 			typeP = struct.unpack('<b', part[PART_MBR.START_TYPE:PART_MBR.END_TYPE])[0]
 			partPri["typePart"] = TYPE.get_type(typeP)
 			listPartPri.append(partPri)
-
 		return listPartPri
 
 	def fat_boot(self,first_sector, last_sector):
@@ -42,19 +41,28 @@ class ImageDissect(object):
 		fatBoot["BYTES_SECTOR"] = struct.unpack('<h', fatBootSector[FAT_RESERVED.START_BYTES_SECTOR:FAT_RESERVED.END_BYTES_SECTOR])[0]
 		fatBoot["QTT_SECTORS_ALOC_TABLE"] = struct.unpack('<h', fatBootSector[FAT_RESERVED.START_QTT_SECTOR_ALOC_TABLE:FAT_RESERVED.END_QTT_SECTOR_ALOC_TABLE])[0]
 		fatBoot["QTT_ALOC_TABLE"] = struct.unpack('<b', fatBootSector[FAT_RESERVED.START_QTT_ALOC_TABLE:FAT_RESERVED.END_QTT_ALOC_TABLE])[0]
-		fatBoot["RESERVED_SECTORS"] = struct.unpack('<h',fatBootSector[FAT_RESERVED.STAR_RESERVED_SECTORS:FAT_RESERVED.END_RESERVED_SECTORS])[0]
+		fatBoot["RESERVED_SECTORS"] = struct.unpack('<h',fatBootSector[FAT_RESERVED.START_RESERVED_SECTORS:FAT_RESERVED.END_RESERVED_SECTORS])[0]
+		fatBoot["SECTORS_CLUSTER"] = struct.unpack('<b', fatBootSector[FAT_RESERVED.START_SECTOR_CLUSTER:FAT_RESERVED.END_SECTOR_CLUSTER])[0]
 		return fatBoot
 	
 	def fat_aloc_table(self, first_sector,last_sector):
 		fatAlocTableSector = self.get_sector(first_sector,last_sector)
 		fatAlocTable = {}
 		files = []
-		for i in range(0,int(((last_sector)*512)/32)):
+		for i in range(0,512):
 			fatAlocTableFile = {}
 			fatAlocTableFile["FILE_NAME"] = fatAlocTableSector[FAT_ALOC_TABLE.START_FILE_NAME+(i*32):FAT_ALOC_TABLE.END_FILE_NAME+(i*32)]
 			fatAlocTableFile["EXT_FILE"] = fatAlocTableSector[FAT_ALOC_TABLE.START_EXT_FILE+(i*32):FAT_ALOC_TABLE.END_EXT_FILE+(i*32)]
-			if (fatAlocTableFile["FILE_NAME"] != b'\x00\x00\x00\x00\x00\x00\x00\x00' and fatAlocTableFile["FILE_NAME"] != b''):
-				files.append(fatAlocTableFile)
-
+			fatAlocTableFile["FILE_SIZE"] = struct.unpack('<l',fatAlocTableSector[FAT_ALOC_TABLE.START_FILE_SIZE+(i*32):FAT_ALOC_TABLE.END_FILE_SIZE+(i*32)])[0]
+			fatAlocTableFile["FISRT_CLUSTER"] = struct.unpack('<h',fatAlocTableSector[FAT_ALOC_TABLE.START_FIRST_CLUSTER+(i*32):FAT_ALOC_TABLE.END_FIRST_CLUSTER+(i*32)])[0]
+			files.append(fatAlocTableFile)
 		fatAlocTable["FILES"] = files
 		return fatAlocTable
+
+	def get_data_fat(self,first_sector, cluster, sector_p_cluster):
+		sectors = cluster * sector_p_cluster
+		cluster = self.get_sector(first_sector+sectors, first_sector+sectors+1)
+		#cluster = self.get_sector(first_sector+170, first_sector+171)
+		print(cluster)
+
+
