@@ -45,6 +45,9 @@ class ImageDissect(object):
 		fatBoot["SECTORS_CLUSTER"] = struct.unpack('<b', fatBootSector[FAT_RESERVED.START_SECTOR_CLUSTER:FAT_RESERVED.END_SECTOR_CLUSTER])[0]
 		fatBoot["QTT_ROOT_ENTRY"] = struct.unpack('<h',fatBootSector[FAT_RESERVED.START_QTT_ROOT_ENTRY:FAT_RESERVED.END_QTT_ROOT_ENTRY])[0]
 		return fatBoot
+
+	def get_fat(self, first_sector, last_sector):
+		return self.get_sector(first_sector, last_sector)
 	
 	def get_fat_root_directory(self, first_sector,last_sector, qtt_root_entry):
 		fatRootDirectorySector = self.get_sector(first_sector,last_sector)
@@ -63,12 +66,11 @@ class ImageDissect(object):
 	def get_fat_data(self,first_sector, cluster, sector_p_cluster, fat):
 		sectors = cluster * sector_p_cluster
 		cluster = self.get_sector(first_sector+sectors, first_sector+sectors+1)
-		while (b'\xff' not in get_next_cluster(sectors, sector_p_cluster, fat)):
-			nextCluster = struct.unpack('<h',get_next_cluster(cluster, sector_p_cluster, fat))
+		while (b'\xff' not in self.get_next_cluster(sectors, fat)):
+			nextCluster = struct.unpack('<h',self.get_next_cluster(cluster, fat))[0]
 			cluster += get_fat_data(first_sector, nextCluster, fat)
 		return (cluster)
 
 	def get_next_cluster(self, sectors, fat):
-		first = int((sectors/2)*3)
-		return(fat[first:first+3])	
+		return(fat[sectors:sectors+2])	
 
