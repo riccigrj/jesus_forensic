@@ -63,14 +63,13 @@ class ImageDissect(object):
 		fatRootDirectory["FILES"] = files
 		return fatRootDirectory
 
-	def get_fat_data(self,first_sector, cluster, sector_p_cluster, fat):
-		sectors = cluster * sector_p_cluster
-		cluster = self.get_sector(first_sector+sectors, first_sector+sectors+1)
-		while (b'\xff' not in self.get_next_cluster(sectors, fat)):
-			nextCluster = struct.unpack('<h',self.get_next_cluster(cluster, fat))[0]
-			cluster += get_fat_data(first_sector, nextCluster, fat)
+	def get_fat_data_non_fragmented(self, file, first_data_sector, fat_boot):
+		sector = (file["FISRT_CLUSTER"]-2) * fat_boot["SECTORS_CLUSTER"]
+		nCluster = int((file["FILE_SIZE"]/(fat_boot["BYTES_SECTOR"] * fat_boot["SECTORS_CLUSTER"])))
+		print(nCluster)
+		if (file["FILE_SIZE"]%(fat_boot["BYTES_SECTOR"] * fat_boot["SECTORS_CLUSTER"])  != 0 ):
+			nCluster+=1
+		print(nCluster)
+		cluster = self.get_sector(first_data_sector+sector, first_data_sector+sector+nCluster)
 		return (cluster)
-
-	def get_next_cluster(self, sectors, fat):
-		return(fat[sectors:sectors+2])	
 

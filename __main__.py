@@ -9,6 +9,7 @@ fileimage = sys.argv[1]
 if __name__ == "__main__":
 	dissector = ImageDissect(fileimage)
 	listPartPri = dissector.mbr(0,1)
+	print(output_mbr(listPartPri))
 	for partPri in listPartPri:
 		fatBoot = dissector.get_fat_boot(partPri["first_sector"],partPri["first_sector"]+1)
 		rootFirstSector = (partPri["first_sector"]+fatBoot["RESERVED_SECTORS"]+(fatBoot["QTT_SECTORS_ALOC_TABLE"]*2))
@@ -18,9 +19,7 @@ if __name__ == "__main__":
 		for file in rootDirectory["FILES"]:
 			if (b'\xe5' in file["FILE_NAME"]):
 				#First cluster of the data section has cluster ID 2
-				#data = dissector.get_fat_data(rootLastSector, (file["FISRT_CLUSTER"]-2),fatBoot["SECTORS_CLUSTER"], fat)
 				print(file)
-				first = partPri["first_sector"]+fatBoot["RESERVED_SECTORS"]
-				print(first)
-				last = first + fatBoot["QTT_SECTORS_ALOC_TABLE"]
-				print (dissector.get_next_cluster(file["FISRT_CLUSTER"]+2, dissector.get_sector(first,last)))
+				data = dissector.get_fat_data_non_fragmented(file, rootLastSector, fatBoot)
+				print(data)
+

@@ -17,6 +17,10 @@ class MBR(IntEnum):
     END_SIGNATUREF = 512
 
 class TYPE(Enum):
+    def __init__(self, cod, label):
+        self.cod = cod
+        self.label = label
+
     FAT12 = (1, "FAT12")
     FAT16CHS = (6, "FAT16CHS")
     FAT32CHS = (11, "FAT32CHS")
@@ -29,7 +33,7 @@ class TYPE(Enum):
     def get_type(self,code):
         listT = self.listType()
         for typePart in listT:
-            if code == typePart:
+            if code == typePart.cod:
                 return typePart
 
 class PART_MBR(IntEnum):
