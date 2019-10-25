@@ -37,13 +37,14 @@ class ImageDissect(object):
 		fatBootSector = self.get_sector(first_sector, last_sector)
 		fatBoot = {}
 		fatBoot["DESC_FAB"] = fatBootSector[FAT_RESERVED.START_DESC_FAB:FAT_RESERVED.END_DESC_FAB].decode("utf-8")
-		fatBoot["DESC_MEDIA"] = fatBootSector[FAT_RESERVED.START_VOLUME_LABEL:FAT_RESERVED.END_VOLUME_LABEL].decode("ascii")
 		fatBoot["BYTES_SECTOR"] = struct.unpack('<h', fatBootSector[FAT_RESERVED.START_BYTES_SECTOR:FAT_RESERVED.END_BYTES_SECTOR])[0]
 		fatBoot["QTT_SECTORS_ALOC_TABLE"] = struct.unpack('<h', fatBootSector[FAT_RESERVED.START_QTT_SECTOR_ALOC_TABLE:FAT_RESERVED.END_QTT_SECTOR_ALOC_TABLE])[0]
 		fatBoot["QTT_ALOC_TABLE"] = struct.unpack('<b', fatBootSector[FAT_RESERVED.START_QTT_ALOC_TABLE:FAT_RESERVED.END_QTT_ALOC_TABLE])[0]
 		fatBoot["RESERVED_SECTORS"] = struct.unpack('<h',fatBootSector[FAT_RESERVED.START_RESERVED_SECTORS:FAT_RESERVED.END_RESERVED_SECTORS])[0]
 		fatBoot["SECTORS_CLUSTER"] = struct.unpack('<b', fatBootSector[FAT_RESERVED.START_SECTOR_CLUSTER:FAT_RESERVED.END_SECTOR_CLUSTER])[0]
 		fatBoot["QTT_ROOT_ENTRY"] = struct.unpack('<h',fatBootSector[FAT_RESERVED.START_QTT_ROOT_ENTRY:FAT_RESERVED.END_QTT_ROOT_ENTRY])[0]
+		fatBoot["FIRST_CLUSTER_ROOT"] = struct.unpack('i',fatBootSector[FAT_32_RESERVED.START_FIRST_ROOT_CLUSTER:FAT_32_RESERVED.END_FIRST_ROOT_CLUSTER])[0]
+		fatBoot["QTT_SECTORS_ALOC_TABLE_32"] = struct.unpack('i',fatBootSector[FAT_32_RESERVED.START_QTT_SECTOR_ALOC_TABLE:FAT_32_RESERVED.END_QTT_SECTOR_ALOC_TABLE])[0]
 		return fatBoot
 
 	def get_fat(self, first_sector, last_sector):
