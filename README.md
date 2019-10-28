@@ -4,7 +4,6 @@
  ## Deleted File Recovery
 | Test Case            | Case Description                 | File System     |
 | :------------------- | -------------------------------: |:---------------:|
-| left-aligned column  | right-aligned column             | centered column |
 | DFR-01               | Recover one non-fragmented file. | FAT             |
 
 ## File Carving
