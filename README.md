@@ -3,7 +3,7 @@
 
  ## Deleted File Recovery
 | Test Case            | Case Description                 | File System     |
-| :------------------- | -------------------------------: |:---------------:|
+| :------------------- | :------------------------------- |:--------------- |
 | DFR-01               | Recover one non-fragmented file. | FAT             |
 
 ## File Carving
