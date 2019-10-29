@@ -16,6 +16,6 @@ class FileSignature(Enum):
 	TIF = ("TIF", b'\x49\x49', None)
 	PCX = ("PCX", b'\x0A\x02\x01\x01', None)
 
-    @classmethod
+	@classmethod
 	def get_file_signatures(self):
 		return [self.JPG, self.PNG, self.BMP, self.GIF, self.TIF, self.PCX]
